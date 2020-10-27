@@ -1,7 +1,7 @@
 {
-    "name": "Don't open too many tabs",
+    "name": "Webbook",
     "version": "1.0",
-    "description": "The tabs will fall down when too many tabs are opened",
+    "description": "This extension magically changes your website into a book",
     "manifest_version": 2,
     "permissions": [
         "activeTab",
@@ -14,7 +14,7 @@
     }],
     "browser_action": {
         "default_popup": "popup/popup.html",
-        "default_icon": "explodeIcon.png"
+        "default_icon": "webbookIcon.png"
     },
     "background": {
         "scripts": ["background.js"],
