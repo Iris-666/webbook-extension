@@ -8,6 +8,8 @@ let allSections = document.getElementsByTagName('section')
 let allMains = document.getElementsByTagName('main')
 let allPres = document.getElementsByTagName('pre')
 let allTables = document.getElementsByTagName('table')
+let allPs = document.getElementsByTagName('p')
+let allh3s = document.getElementsByTagName('h3')
 
 
 console.log(allTables)
@@ -34,4 +36,12 @@ for (let i = 0; i < allPres.length; i++) {
 
 for (let i = 0; i < allTables.length; i++) {
     allTables[i].style.backgroundColor = "transparent"
+}
+
+for (let i = 0; i < allPs.length; i++) {
+    allPs[i].style.backgroundColor = "transparent"
+}
+
+for (let i = 0; i < allh3s.length; i++) {
+    allh3s[i].style.backgroundColor = "transparent"
 }
