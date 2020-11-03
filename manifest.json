@@ -20,5 +20,11 @@
     "background": {
         "scripts": ["background.js"],
         "persistent": false
-    }
+    },
+
+    "web_accessible_resources": [
+        "images/bookworm1.gif",
+        "images/bookworm2.gif",
+        "images/bookworm3.gif"
+    ]
 }
