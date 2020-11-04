@@ -1,24 +1,16 @@
 console.log("this is background script");
 
-// https://stackoverflow.com/questions/7303452/how-to-get-current-tabid-from-background-page
-// get all active tabs in window
-// chrome.tabs.query({active:true,windowType:"normal", currentWindow: true},function(d){console.log(d[0].id);})
-let historyList = [];
+//for storing visit count of the tabs
 let historyVisit = [];
 
-// chrome.history.search({ text: '' }, function(data) {
-//     data.forEach(function(page) {
-//         historyVisit.push(page)
-//     });
-// });
+//for storing the windowY position of the tabs
+let historyPosition = [];
 
 
-//when a new website has been visited
+//when a new website has been visited, send visit count information to content script
 chrome.history.onVisited.addListener(function(data) {
     historyVisit.push(data)
-    console.log(data.visitCount)
-    console.log(historyVisit)
-    let whetherBookmark = false;
+    console.log("website data info: " + historyVisit)
 
     // the following is for getting window scroll position of the active tab
     //when tab is active
@@ -27,37 +19,42 @@ chrome.history.onVisited.addListener(function(data) {
         currentWindow: true
     }, function(tabs) {
 
-        //visit count
+        //store website visitCount data and send it to content script
         let visitCount = {
             historyVisit: historyVisit,
             thisPageVisitCount: data.visitCount
         }
-        chrome.tabs.sendMessage(tabs[0].id, visitCount);
-        console.log(visitCount);
 
-        //history websites info
-        for (let i = 0; i < historyList.length; i++) {
-            if (tabs[0].url == historyList[i].storedURL) {
-                console.log('this website is revisited')
+        chrome.tabs.sendMessage(tabs[0].id, visitCount);
+
+        //for bookmark function: when revisit a page, scroll to the stored position
+        for (let i = 0; i < historyPosition.length; i++) {
+            if (tabs[0].url == historyPosition[i].storedURL) {
+                console.log('this website has a bookmark record')
                 chrome.tabs.sendMessage(tabs[0].id, {
                     bookmarkPos: "bookmarkPos",
-                    posY: historyList[i].windowY,
+                    posY: historyPosition[i].windowY,
                 })
             }
         }
 
-        //when bookmark is clicked, receive button click message from popup script
+        //Receive two messages: pageloaded and get scroll position
         chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
 
             if (message.loaded == 'pageLoaded') {
 
-                for (let i = 0; i < historyList.length; i++) {
-                    if (tabs[0].url == historyList[i].storedURL) {
+                //check if bookmark button has been clicked
+                let whetherBookmark = false;
+
+                for (let i = 0; i < historyPosition.length; i++) {
+                    if (tabs[0].url == historyPosition[i].storedURL) {
                         whetherBookmark = true;
-                        posY = historyList[i].windowY
+                        posY = historyPosition[i].windowY
                     }
                 }
 
+                //send both window position and visit count information when bookmark is clicked
+                //else only send visit count information
                 if (whetherBookmark == true) {
                     chrome.tabs.sendMessage(tabs[0].id, {
                         thisPageVisitCount: data.visitCount,
@@ -75,52 +72,41 @@ chrome.history.onVisited.addListener(function(data) {
                 }
             }
 
-            // console.log(message.type);
-            if (message.type = "getTabId") {
+            //when the bookmark has been clicked, get scroll position and send it to content script (message from content script)
+            if (message.type = "getScrollPosition") {
                 //send tabID to content script
                 //(tabs.sendmessage: specific for sending message to content script)
-                chrome.tabs.sendMessage(tabs[0].id, tabs[0].id
-                    //get response: scrolling position
+                chrome.tabs.sendMessage(tabs[0].id, { type: "currentScrollPosition" }
+
+                    //get current window scrolling position
                     , (response) => {
                         console.log("X: " + response.scrollX + " , " + "Y: " + response.scrollY);
 
                         //store window Y position and urls
                         var windowY = response.scrollY;
-                        console.log(windowY);
 
-                        //create a pair for website url and position
-                        let websiteInfo = {
+                        //store window scrolling position and url info
+                        let positionInfo = {
                             windowY: windowY,
                             storedURL: data.url
                         }
 
+                        //store most updated history position information in historyPosition array
                         let revisit = false;
 
-                        for (let i = 0; i < historyList.length; i++) {
-                            if (historyList[i].storedURL == data.url) {
-                                historyList[i].windowY = windowY
+                        for (let i = 0; i < historyPosition.length; i++) {
+                            if (historyPosition[i].storedURL == data.url) {
+                                historyPosition[i].windowY = windowY
                                 revisit = true
                             }
                         }
 
                         if (revisit == false) {
-                            historyList.push(websiteInfo);
+                            historyPosition.push(positionInfo);
                         }
 
-                        console.log(historyList);
+                        console.log(historyPosition);
 
-                        historyList.push(websiteInfo);
-                        console.log(historyList);
-
-                        chrome.storage.local.set(websiteInfo, function() {
-                            console.log("windowY position and url are stored at", windowY, historyList);
-                        });
-
-                        //get window Y position and urls
-                        chrome.storage.local.get(websiteInfo, function(result) {
-                            console.log("get window position and url");
-                            console.log(websiteInfo);
-                        })
                     })
             }
 

@@ -22,9 +22,9 @@
         "persistent": false
     },
     "icons": {
-        "16": "webbookIcon.png",
-        "48": "icon48.png",
-        "128": "icon128.png"
+        "16": "images/webbookIcon.png",
+        "48": "images/icon48.png",
+        "128": "images/icon128.png"
     },
     "web_accessible_resources": [
         "images/bookworm1.gif",
