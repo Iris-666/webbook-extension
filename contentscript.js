@@ -144,10 +144,6 @@ chrome.runtime.onMessage.addListener(
 
         }
 
-        //text cut
-
-        // chrome.runtime.onMessage.addListener(gotMessage);
-
     })
 
 
