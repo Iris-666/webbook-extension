@@ -2,7 +2,7 @@
 console.log("Hi I'm content script!");
 
 window.addEventListener('load', function() {
-    alert("It's loaded!");
+    // alert("It's loaded!");
     chrome.runtime.sendMessage({ loaded: "pageLoaded" }, function(response) {});
     //send a message to background script when the page is fully loaded
     //then the background script would know it can send message to this tab 
