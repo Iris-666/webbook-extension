@@ -14,10 +14,17 @@ body {
     position: absolute;
     top: 70px;
     width: 180px;
-    background-color: yellow;
-    border-radius: 20px;
+    background-color: #ffffbb;
     font-size: 16px;
     font-family: Arial, Helvetica, sans-serif;
+    cursor: pointer;
+    border-radius: 12px;
+    border: none;
+    box-shadow: 5px 5px 10px #18a285, -5px -5px 10px #20d6b1;
+}
+
+button:focus {
+    outline: 0;
 }
 
 h2 {
